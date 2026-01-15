@@ -1,45 +1,130 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Grocery Store System</title>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grocery Store Dashboard</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/custom.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            background-color: #f4f7f9;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            color: #333;
+        }
+        .zig-zag-container {
+            padding-top: 80px;
+            padding-bottom: 80px;
+        }
+        /* Refined Card Styling */
+        .dashboard-card {
+            border: none;
+            border-radius: 30px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #ffffff;
+            text-decoration: none !important;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        }
+        /* Interactive Hover Effects */
+        .dashboard-card:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+        }
+        .dashboard-card:hover .icon-figure {
+            transform: scale(1.1);
+            transition: 0.3s;
+        }
+        /* Icon Figure Styling */
+        .icon-figure {
+            font-size: 5.5rem;
+            margin-bottom: 25px;
+            transition: 0.3s;
+        }
+        .card-title {
+            font-weight: 800;
+            font-size: 1.75rem;
+            margin-bottom: 5px;
+        }
+        /* Section Divider / Spacer */
+        .mt-zigzag {
+            margin-top: 120px;
+        }
+        /* Modernized Recent Orders Button */
+        .recent-orders-section {
+            margin-top: 100px;
+        }
+        .btn-recent {
+            border-radius: 60px;
+            padding: 20px 50px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        .btn-recent:hover {
+            background: #1a252f;
+            color: #fff;
+            box-shadow: 0 12px 20px rgba(0,0,0,0.2);
+            transform: scale(1.05);
+        }
+        .sub-text {
+            color: #8898aa;
+            font-size: 0.95rem;
+            margin-top: 15px;
+        }
+    </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <a class="navbar-brand" href="index.html">Grocery Store System</a>
-    </nav>
-    <div class="container mt-5">
-        <div class="row text-center mb-4">
-            <div class="col-sm-6"><div class="card p-4 shadow-sm"><h3>Products</h3><a href="manage_products.html" class="btn btn-primary">Go to Products</a></div></div>
-            <div class="col-sm-6"><div class="card p-4 shadow-sm"><h3>Orders</h3><a href="order.html" class="btn btn-success">Create New Order</a></div></div>
+
+    <div class="container zig-zag-container">
+        <div class="text-center mb-5">
+            <h1 class="display-3 font-weight-bold text-dark">Grocery Manager</h1>
+            <p class="lead text-muted">Efficiently handle your inventory and sales from one place.</p>
         </div>
-        <div class="row mt-5">
-            <div class="col-sm-12">
-                <h3>Recent Orders</h3>
-                <table class="table table-bordered mt-3" id="allOrdersTable">
-                    <thead class="thead-dark">
-                        <tr><th>Date</th><th>Order ID</th><th>Customer Name</th><th>Total Amount</th></tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
+        
+        <div class="row align-items-center">
+            <div class="col-md-5">
+                <a href="manage_products.html" class="card dashboard-card">
+                    <div class="icon-figure text-primary">
+                        <i class="fas fa-boxes"></i>
+                    </div>
+                    <div class="card-title text-dark">Manage Products</div>
+                    <span class="text-muted">Inventory & Pricing</span>
+                </a>
+            </div>
+            
+            <div class="col-md-2 d-none d-md-block"></div>
+
+            <div class="col-md-5 mt-zigzag">
+                <a href="order.html" class="card dashboard-card">
+                    <div class="icon-figure text-success">
+                        <i class="fas fa-cart-plus"></i>
+                    </div>
+                    <div class="card-title text-dark">Create New Order</div>
+                    <span class="text-muted">Instant Billing</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="row recent-orders-section justify-content-center">
+            <div class="col-auto text-center">
+                <a href="recent_orders.html" class="btn btn-recent">
+                    <i class="fas fa-receipt mr-3"></i> View Sales History
+                </a>
+                <p class="sub-text">Review and manage past transactions and total revenue.</p>
             </div>
         </div>
     </div>
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-    <script>
-        $(function () {
-            $.get('http://127.0.0.1:5000/getAllOrders', function (response) {
-                if (response) {
-                    var table = '';
-                    $.each(response, function(index, order) {
-                        table += '<tr><td>'+order.datetime+'</td><td>'+order.order_id+'</td><td>'+order.customer_name+'</td><td>'+order.total.toFixed(2)+' Rs</td></tr>';
-                    });
-                    $("#allOrdersTable tbody").empty().html(table);
-                }
-            });
-        });
-    </script>
+
 </body>
 </html>
