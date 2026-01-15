@@ -59,15 +59,13 @@
     </div>
 
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-    <script src="js/custom.js"></script>
     <script>
-        // Specific logic for the Order Page to handle dynamic rows
         $(function () {
-            var products = [];
+            var productsList = [];
             
             // 1. Fetch products for dropdown
             $.get('http://127.0.0.1:5000/getProducts', function (response) {
-                products = response;
+                productsList = response;
                 var options = '<option value="">-- Select Product --</option>';
                 $.each(response, function(index, p) {
                     options += '<option value="'+p.product_id+'">'+p.name+'</option>';
@@ -75,10 +73,10 @@
                 $("#productDropdown").html(options);
             });
 
-            // 2. Update price when product changes
+            // 2. Auto-fill price
             $("#productDropdown").change(function() {
                 var id = $(this).val();
-                var product = products.find(p => p.product_id == id);
+                var product = productsList.find(p => p.product_id == id);
                 $("#productPrice").val(product ? product.price_per_unit : "");
             });
 
@@ -88,15 +86,15 @@
                 var name = $("#productDropdown option:selected").text();
                 var price = parseFloat($("#productPrice").val());
                 var qty = parseFloat($("#productQty").val());
+                
+                if(!id || isNaN(qty) || qty <= 0) return alert("Select a product and valid quantity");
+
                 var total = price * qty;
-
-                if(!id) return alert("Select a product");
-
                 var row = `<tr>
-                    <td class="product-name">${name}<input type="hidden" class="product-id" value="${id}"></td>
-                    <td class="product-price">${price}</td>
-                    <td><input type="number" class="form-control product-qty" value="${qty}" readonly></td>
-                    <td class="product-total">${total.toFixed(2)}</td>
+                    <td>${name}<input type="hidden" class="cart-product-id" value="${id}"></td>
+                    <td>${price}</td>
+                    <td><input type="number" class="form-control cart-qty" value="${qty}" readonly></td>
+                    <td class="cart-total">${total.toFixed(2)}</td>
                     <td><button class="btn btn-danger btn-sm remove-item">X</button></td>
                 </tr>`;
                 
@@ -112,11 +110,46 @@
 
             function updateGrandTotal() {
                 var grandTotal = 0;
-                $(".product-total").each(function() {
+                $(".cart-total").each(function() {
                     grandTotal += parseFloat($(this).text());
                 });
                 $("#grandTotal").text(grandTotal.toFixed(2));
             }
+
+            // 5. FINAL SAVE ORDER LOGIC
+            $("#saveOrder").on("click", function () {
+                var customer = $("#customerName").val();
+                var total = $("#grandTotal").text();
+                var details = [];
+
+                // Scrape table rows
+                $("#orderTable tbody tr").each(function () {
+                    var row = $(this);
+                    details.push({
+                        product_id: row.find('.cart-product-id').val(),
+                        quantity: row.find('.cart-qty').val(),
+                        total_price: row.find('.cart-total').text()
+                    });
+                });
+
+                if (!customer) return alert("Please enter Customer Name");
+                if (details.length === 0) return alert("Please add at least one product to the order.");
+
+                var payload = {
+                    'customer_name': customer,
+                    'grand_total': total,
+                    'order_details': details
+                };
+
+                $.post('http://127.0.0.1:5000/insertOrder', {
+                    'data': JSON.stringify(payload)
+                }, function (response) {
+                    alert("Order Saved Successfully! Order ID: " + response.order_id);
+                    location.reload(); 
+                }).fail(function() {
+                    alert("Error: Backend is not responding.");
+                });
+            });
         });
     </script>
 </body>
