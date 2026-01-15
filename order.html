@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GSMS - New Order</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+<body style="background-color: #f8f9fa;">
+    <nav class="navbar navbar-dark bg-dark mb-4">
+        <a class="navbar-brand" href="index.html">Grocery Store System</a>
+    </nav>
+    <div class="container">
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h3>New Order</h3>
+                <div class="form-group">
+                    <label>Customer Name</label>
+                    <input type="text" id="customerName" class="form-control" placeholder="Enter customer name">
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-5">
+                        <label>Product</label>
+                        <select id="productDropdown" class="form-control"></select>
+                    </div>
+                    <div class="col-md-3">
+                        <label>Price</label>
+                        <input type="text" id="productPrice" class="form-control" readonly>
+                    </div>
+                    <div class="col-md-2">
+                        <label>Quantity</label>
+                        <input type="number" id="productQty" class="form-control" value="1" min="1">
+                    </div>
+                    <div class="col-md-2">
+                        <label>&nbsp;</label>
+                        <button id="addItem" class="btn btn-success btn-block">Add Item</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <table class="table" id="orderTable">
+                    <thead>
+                        <tr><th>Product</th><th>Price</th><th>Quantity</th><th>Total</th><th>Action</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <div class="text-right">
+                    <h4>Grand Total: <span id="grandTotal">0.00</span> Rs</h4>
+                    <button id="saveOrder" class="btn btn-primary btn-lg mt-3">Save Order</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="js/custom.js"></script>
+    <script>
+        // Specific logic for the Order Page to handle dynamic rows
+        $(function () {
+            var products = [];
+            
+            // 1. Fetch products for dropdown
+            $.get('http://127.0.0.1:5000/getProducts', function (response) {
+                products = response;
+                var options = '<option value="">-- Select Product --</option>';
+                $.each(response, function(index, p) {
+                    options += '<option value="'+p.product_id+'">'+p.name+'</option>';
+                });
+                $("#productDropdown").html(options);
+            });
+
+            // 2. Update price when product changes
+            $("#productDropdown").change(function() {
+                var id = $(this).val();
+                var product = products.find(p => p.product_id == id);
+                $("#productPrice").val(product ? product.price_per_unit : "");
+            });
+
+            // 3. Add item to table
+            $("#addItem").click(function() {
+                var id = $("#productDropdown").val();
+                var name = $("#productDropdown option:selected").text();
+                var price = parseFloat($("#productPrice").val());
+                var qty = parseFloat($("#productQty").val());
+                var total = price * qty;
+
+                if(!id) return alert("Select a product");
+
+                var row = `<tr>
+                    <td class="product-name">${name}<input type="hidden" class="product-id" value="${id}"></td>
+                    <td class="product-price">${price}</td>
+                    <td><input type="number" class="form-control product-qty" value="${qty}" readonly></td>
+                    <td class="product-total">${total.toFixed(2)}</td>
+                    <td><button class="btn btn-danger btn-sm remove-item">X</button></td>
+                </tr>`;
+                
+                $("#orderTable tbody").append(row);
+                updateGrandTotal();
+            });
+
+            // 4. Remove item
+            $(document).on("click", ".remove-item", function() {
+                $(this).closest('tr').remove();
+                updateGrandTotal();
+            });
+
+            function updateGrandTotal() {
+                var grandTotal = 0;
+                $(".product-total").each(function() {
+                    grandTotal += parseFloat($(this).text());
+                });
+                $("#grandTotal").text(grandTotal.toFixed(2));
+            }
+        });
+    </script>
+</body>
+</html>

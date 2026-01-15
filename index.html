@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Grocery Store System</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/custom.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="index.html">Grocery Store System</a>
+    </nav>
+    <div class="container mt-5">
+        <div class="row text-center mb-4">
+            <div class="col-sm-6"><div class="card p-4 shadow-sm"><h3>Products</h3><a href="manage_products.html" class="btn btn-primary">Go to Products</a></div></div>
+            <div class="col-sm-6"><div class="card p-4 shadow-sm"><h3>Orders</h3><a href="order.html" class="btn btn-success">Create New Order</a></div></div>
+        </div>
+        <div class="row mt-5">
+            <div class="col-sm-12">
+                <h3>Recent Orders</h3>
+                <table class="table table-bordered mt-3" id="allOrdersTable">
+                    <thead class="thead-dark">
+                        <tr><th>Date</th><th>Order ID</th><th>Customer Name</th><th>Total Amount</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script>
+        $(function () {
+            $.get('http://127.0.0.1:5000/getAllOrders', function (response) {
+                if (response) {
+                    var table = '';
+                    $.each(response, function(index, order) {
+                        table += '<tr><td>'+order.datetime+'</td><td>'+order.order_id+'</td><td>'+order.customer_name+'</td><td>'+order.total.toFixed(2)+' Rs</td></tr>';
+                    });
+                    $("#allOrdersTable tbody").empty().html(table);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

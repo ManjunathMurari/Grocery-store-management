@@ -1,0 +1,41 @@
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Products</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+<body style="background-color: #f8f9fa;">
+    <nav class="navbar navbar-dark bg-dark mb-4"><a class="navbar-brand" href="index.html">Grocery Store System</a></nav>
+    <div class="container">
+        <div class="d-flex justify-content-between mb-3">
+            <h3>Product Inventory</h3>
+            <button class="btn btn-primary" data-toggle="modal" data-target="#productModal">Add New Product</button>
+        </div>
+        <table class="table table-bordered bg-white" id="productTable">
+            <thead><tr><th>Name</th><th>Unit</th><th>Price</th><th>Action</th></tr></thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div class="modal fade" id="productModal" tabindex="-1">
+        <div class="modal-dialog"><div class="modal-content">
+            <div class="modal-header"><h5>Add Product</h5></div>
+            <div class="modal-body">
+                <form id="productForm">
+                    <div class="form-group"><label>Name</label><input type="text" class="form-control" id="name"></div>
+                    <div class="form-group"><label>Unit</label><select class="form-control" id="uoms"></select></div>
+                    <div class="form-group"><label>Price</label><input type="number" class="form-control" id="price"></div>
+                </form>
+            </div>
+            <div class="modal-footer"><button type="button" class="btn btn-primary" id="saveProduct">Save</button></div>
+        </div></div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="js/custom.js"></script>
+</body>
+</html>
