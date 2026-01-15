@@ -3,28 +3,29 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import json
-import products_dao
-import uom_dao
-import orders_dao
 from sql_connection import get_sql_connection
+import products_dao
+import orders_dao
+import uom_dao
 
 app = Flask(__name__)
+# CORS allows your HTML files to talk to this Python server
 CORS(app)
-
-@app.route('/getProducts', methods=['GET'])
-def get_products():
-    connection = get_sql_connection()
-    try:
-        products = products_dao.get_all_products(connection)
-        return jsonify(products)
-    finally:
-        connection.close()
 
 @app.route('/getUOM', methods=['GET'])
 def get_uom():
     connection = get_sql_connection()
     try:
         response = uom_dao.get_uoms(connection)
+        return jsonify(response)
+    finally:
+        connection.close()
+
+@app.route('/getProducts', methods=['GET'])
+def get_products():
+    connection = get_sql_connection()
+    try:
+        response = products_dao.get_all_products(connection)
         return jsonify(response)
     finally:
         connection.close()
@@ -49,6 +50,15 @@ def delete_product():
     finally:
         connection.close()
 
+@app.route('/getAllOrders', methods=['GET'])
+def get_all_orders():
+    connection = get_sql_connection()
+    try:
+        response = orders_dao.get_all_orders(connection)
+        return jsonify(response)
+    finally:
+        connection.close()
+
 @app.route('/insertOrder', methods=['POST'])
 def insert_order():
     request_payload = json.loads(request.form['data'])
@@ -59,14 +69,16 @@ def insert_order():
     finally:
         connection.close()
 
-@app.route('/getAllOrders', methods=['GET'])
-def get_all_orders():
+@app.route('/deleteOrder', methods=['POST'])
+def delete_order():
     connection = get_sql_connection()
     try:
-        response = orders_dao.get_all_orders(connection)
-        return jsonify(response)
+        order_id = request.form['order_id']
+        orders_dao.delete_order(connection, order_id)
+        return jsonify({'order_id': order_id})
     finally:
         connection.close()
 
 if __name__ == "__main__":
+    print("Starting Grocery Store Server...")
     app.run(port=5000, debug=True)
